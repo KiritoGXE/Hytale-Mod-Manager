@@ -17,7 +17,7 @@ A beautiful terminal-based GUI mod manager for Hytale servers with automatic upd
 
 ```
 ┌─────────────── Hytale Mod Manager ───────────────┐
-│                                                   │
+│                                                  │
 │  1. Search and install mod                       │
 │  2. Install mod by ID                            │
 │  3. Update all mods                              │
@@ -25,8 +25,8 @@ A beautiful terminal-based GUI mod manager for Hytale servers with automatic upd
 │  5. Remove mod                                   │
 │  6. Test API connection                          │
 │  7. Exit                                         │
-│                                                   │
-└───────────────────────────────────────────────────┘
+│                                                  │
+└──────────────────────────────────────────────────┘
 ```
 
 ## 🚀 Quick Start
