@@ -57,7 +57,7 @@ sudo apt-get install whiptail jq curl
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/hytale-mod-manager.git
+git clone https://github.com/KiritoGXE/Hytale-Mod-Manager.git
 cd hytale-mod-manager
 ```
 
