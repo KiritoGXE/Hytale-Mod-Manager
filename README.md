@@ -73,7 +73,7 @@ nano mod-manager.sh
 
 Find this line:
 ```bash
-API_KEY=""
+API_KEY=''
 ```
 
 And replace it with your key (use single quotes!):
@@ -132,10 +132,11 @@ Simply run the script:
 
 ```
 /root/hytale/
-├── mods/
-│   ├── cool-mod-1.2.3.jar
-│   ├── another-mod-2.1.0.jar
-│   └── mod-metadata.json       # Automatically managed
+├──Server/
+    └──mods/
+│       ├── cool-mod-1.2.3.jar
+│       ├── another-mod-2.1.0.jar
+│       └── mod-metadata.json       # Automatically managed
 └── Scripts/
     └── mod-manager.sh
 ```
