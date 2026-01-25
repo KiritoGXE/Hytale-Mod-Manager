@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -285,7 +285,7 @@
     <div class="container">
         <header>
             <h1>🎮 Hytale Mod Manager</h1>
-            <p class="subtitle">Gestisci i tuoi mod di Hytale facilmente</p>
+            <p class="subtitle">Manage your Hytale mods easily</p>
         </header>
 
         <div class="status-bar">
@@ -294,35 +294,35 @@
                 <span id="apiStatusText">Checking API...</span>
             </div>
             <div class="status-item">
-                <span>Mod installati: <strong id="modCount">0</strong></span>
+                <span>Installed mods: <strong id="modCount">0</strong></span>
             </div>
-            <button onclick="updateAllMods()" id="updateAllBtn">🔄 Aggiorna Tutti</button>
+            <button onclick="updateAllMods()" id="updateAllBtn">🔄 Update All</button>
         </div>
 
         <div class="main-grid" style="margin-top: 20px;">
             <div class="card">
-                <h2>🔍 Cerca Mod</h2>
+                <h2>🔍 Search Mods</h2>
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Cerca mod per nome...">
-                    <button onclick="searchMods()">Cerca</button>
+                    <input type="text" id="searchInput" placeholder="Search mods by name...">
+                    <button onclick="searchMods()">Search</button>
                 </div>
                 <div id="searchResults" class="search-results"></div>
             </div>
 
             <div class="card">
-                <h2>➕ Installa per ID</h2>
+                <h2>➕ Install by ID</h2>
                 <div class="search-box">
                     <input type="number" id="projectIdInput" placeholder="CurseForge Project ID">
-                    <button onclick="installById()">Installa</button>
+                    <button onclick="installById()">Install</button>
                 </div>
                 <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
-                    Inserisci l'ID del progetto CurseForge per installare direttamente un mod.
+                    Enter the CurseForge project ID to install a mod directly.
                 </p>
             </div>
         </div>
 
         <div class="card">
-            <h2>📦 Mod Installati</h2>
+            <h2>📦 Installed Mods</h2>
             <div id="installedMods" class="installed-mods"></div>
         </div>
     </div>
@@ -352,10 +352,10 @@
                 
                 if (data.success) {
                     statusDot.classList.remove('offline');
-                    statusText.textContent = 'API Connessa';
+                    statusText.textContent = 'API Connected';
                 } else {
                     statusDot.classList.add('offline');
-                    statusText.textContent = 'API Non Configurata';
+                    statusText.textContent = 'API Not Configured';
                 }
             } catch (error) {
                 document.getElementById('apiStatus').classList.add('offline');
@@ -365,7 +365,7 @@
 
         async function loadInstalledMods() {
             const container = document.getElementById('installedMods');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div>Caricamento...</div>';
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/mods`);
@@ -377,10 +377,10 @@
                     container.innerHTML = `
                         <div class="empty-state">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 [...]
                             </svg>
-                            <p>Nessun mod installato</p>
-                            <p style="font-size: 0.9em; margin-top: 10px;">Cerca e installa il tuo primo mod!</p>
+                            <p>No mods installed</p>
+                            <p style="font-size: 0.9em; margin-top: 10px;">Search and install your first mod!</p>
                         </div>
                     `;
                     return;
@@ -391,31 +391,31 @@
                         <div class="mod-name">${mod.name}</div>
                         <div class="mod-info">
                             📄 ${mod.filename}<br>
-                            🔖 Versione: ${mod.version || 'N/A'}<br>
-                            📅 ${new Date(mod.last_updated).toLocaleDateString('it-IT')}
+                            🔖 Version: ${mod.version || 'N/A'}<br>
+                            📅 ${new Date(mod.last_updated).toLocaleDateString('en-US')}
                         </div>
                         <div class="mod-actions">
                             <button class="btn-danger" onclick="removeMod('${mod.filename}', '${mod.name}')">
-                                🗑️ Rimuovi
+                                🗑️ Remove
                             </button>
                         </div>
                     </div>
                 `).join('');
             } catch (error) {
-                container.innerHTML = `<div class="empty-state" style="color: #f44336;">❌ Errore nel caricamento</div>`;
-                showNotification('Errore nel caricamento dei mod', 'error');
+                container.innerHTML = `<div class="empty-state" style="color: #f44336;">❌ Error loading mods</div>`;
+                showNotification('Error loading mods', 'error');
             }
         }
 
         async function searchMods() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) {
-                showNotification('Inserisci un termine di ricerca', 'error');
+                showNotification('Enter a search term', 'error');
                 return;
             }
             
             const container = document.getElementById('searchResults');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div>Ricerca in corso...</div>';
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Searching...</div>';
             
             try {
                 const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`);
@@ -424,8 +424,8 @@
                 if (!data.data || data.data.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
-                            <p>Nessun risultato per "${query}"</p>
-                            <p style="font-size: 0.9em; margin-top: 10px;">Prova con un altro termine</p>
+                            <p>No results for "${query}"</p>
+                            <p style="font-size: 0.9em; margin-top: 10px;">Try another search term</p>
                         </div>
                     `;
                     return;
@@ -438,25 +438,25 @@
                             <span class="badge">${mod.downloadCount?.toLocaleString() || 0} DL</span>
                         </div>
                         <div class="mod-info">
-                            ${mod.summary || 'Nessuna descrizione'}
+                            ${mod.summary || 'No description'}
                         </div>
                         <div class="mod-actions">
                             <button class="btn-success" onclick="installMod(${mod.id}, '${mod.name.replace(/'/g, "\\'")}')">
-                                ⬇️ Installa
+                                ⬇️ Install
                             </button>
                         </div>
                     </div>
                 `).join('');
             } catch (error) {
-                container.innerHTML = `<div class="empty-state" style="color: #f44336;">❌ Errore nella ricerca</div>`;
-                showNotification('Errore nella ricerca', 'error');
+                container.innerHTML = `<div class="empty-state" style="color: #f44336;">❌ Error searching</div>`;
+                showNotification('Error during search', 'error');
             }
         }
 
         async function installMod(projectId, modName) {
-            if (!confirm(`Installare "${modName}"?`)) return;
+            if (!confirm(`Install "${modName}"?`)) return;
             
-            showNotification('Download in corso...', 'success');
+            showNotification('Download in progress...', 'success');
             
             try {
                 const response = await fetch(`${API_URL}/mods/${projectId}`, {
@@ -465,22 +465,22 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showNotification(`${modName} installato con successo!`, 'success');
+                    showNotification(`${modName} installed successfully!`, 'success');
                     loadInstalledMods();
                     document.getElementById('searchResults').innerHTML = '';
                     document.getElementById('searchInput').value = '';
                 } else {
-                    showNotification(data.error || 'Errore durante l\'installazione', 'error');
+                    showNotification(data.error || 'Error during installation', 'error');
                 }
             } catch (error) {
-                showNotification('Errore durante l\'installazione', 'error');
+                showNotification('Error during installation', 'error');
             }
         }
 
         async function installById() {
             const projectId = document.getElementById('projectIdInput').value.trim();
             if (!projectId) {
-                showNotification('Inserisci un Project ID valido', 'error');
+                showNotification('Enter a valid Project ID', 'error');
                 return;
             }
             
@@ -489,7 +489,7 @@
         }
 
         async function removeMod(filename, modName) {
-            if (!confirm(`Rimuovere "${modName}"?`)) return;
+            if (!confirm(`Remove "${modName}"?`)) return;
             
             try {
                 const response = await fetch(`${API_URL}/mods/${encodeURIComponent(filename)}`, {
@@ -498,20 +498,20 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showNotification(`${modName} rimosso con successo`, 'success');
+                    showNotification(`${modName} removed successfully`, 'success');
                     loadInstalledMods();
                 } else {
-                    showNotification(data.error || 'Errore durante la rimozione', 'error');
+                    showNotification(data.error || 'Error during removal', 'error');
                 }
             } catch (error) {
-                showNotification('Errore durante la rimozione', 'error');
+                showNotification('Error during removal', 'error');
             }
         }
 
         async function updateAllMods() {
             const btn = document.getElementById('updateAllBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Aggiornamento...';
+            btn.textContent = '⏳ Updating...';
             
             try {
                 const response = await fetch(`${API_URL}/mods/update-all`, {
@@ -521,23 +521,22 @@
                 
                 if (data.success) {
                     if (data.updated_count > 0) {
-                        showNotification(`${data.updated_count} mod aggiornati!`, 'success');
+                        showNotification(`${data.updated_count} mods updated!`, 'success');
                     } else {
-                        showNotification('Tutti i mod sono già aggiornati', 'success');
+                        showNotification('All mods are already up to date', 'success');
                     }
                     loadInstalledMods();
                 } else {
-                    showNotification(data.error || 'Errore durante l\'aggiornamento', 'error');
+                    showNotification(data.error || 'Error during update', 'error');
                 }
             } catch (error) {
-                showNotification('Errore durante l\'aggiornamento', 'error');
+                showNotification('Error during update', 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = '🔄 Aggiorna Tutti';
+                btn.textContent = '🔄 Update All';
             }
         }
 
-        // Event listener per ricerca con Enter
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('searchInput').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') searchMods();
@@ -549,8 +548,7 @@
             
             checkApiStatus();
             loadInstalledMods();
-            
-            // Auto-refresh ogni 30 secondi
+
             setInterval(() => {
                 checkApiStatus();
                 loadInstalledMods();
