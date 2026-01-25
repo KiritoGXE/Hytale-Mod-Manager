@@ -4,7 +4,7 @@ HOMEDIR="/root/hytale"
 MODS_DIR="$HOMEDIR/Server/mods"
 METADATA_FILE="$MODS_DIR/mod-metadata.json"
 CURSEFORGE_API="https://api.curseforge.com/v1"
-API_KEY='$2a$10$nTyyyMrkBS7i/TIpyxwk2Oy4ltQaBvnWexwmgXCGY6hBbhBz566pe'
+API_KEY=''
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
