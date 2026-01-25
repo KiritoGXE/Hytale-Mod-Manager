@@ -192,9 +192,9 @@ search_mods() {
 
 install_mod_by_id() {
     local project_id=$1
-    
+
     whiptail --title "Downloading" --infobox "Fetching mod information..." 8 50
-    
+
     mod_info=$(get_mod_info "$project_id")
     if [ $? -ne 0 ]; then
         whiptail --title "Error" --msgbox "Failed to fetch mod information.\nCheck the Project ID and your API key." 10 60
@@ -203,11 +203,11 @@ install_mod_by_id() {
     
     mod_name=$(echo "$mod_info" | jq -r '.data.name')
     mod_summary=$(echo "$mod_info" | jq -r '.data.summary')
-    
+
     if ! whiptail --title "Confirm Installation" --yesno "Mod: $mod_name\n\n$mod_summary\n\nDo you want to install this mod?" 15 70; then
         return 1
     fi
-    
+
     whiptail --title "Downloading" --infobox "Fetching latest version..." 8 50
     
     file_info=$(get_latest_file "$project_id")
@@ -221,7 +221,7 @@ install_mod_by_id() {
     download_url=$(echo "$file_info" | jq -r '.data[0].downloadUrl')
     display_name=$(echo "$file_info" | jq -r '.data[0].displayName')
     file_date=$(echo "$file_info" | jq -r '.data[0].fileDate')
-    
+
     whiptail --title "Downloading" --infobox "Downloading $filename..." 8 50
     
     if download_mod "$download_url" "$filename"; then
@@ -248,7 +248,7 @@ install_mod() {
     if ! check_api_key; then
         return 1
     fi
-    
+
     project_id=$(whiptail --inputbox "Enter CurseForge Project ID:" 10 60 3>&1 1>&2 2>&3)
     exitstatus=$?
     
@@ -296,24 +296,32 @@ update_mods() {
         mod_name=$(jq -r --arg f "$filename" '.[$f].name' "$METADATA_FILE")
         
         whiptail --title "Updating" --gauge "Checking $mod_name ($current/$total_count)..." 8 60 $((current * 100 / total_count))
-        
+
         file_info=$(get_latest_file "$project_id")
         if [ $? -ne 0 ]; then
             continue
         fi
         
         latest_file_id=$(echo "$file_info" | jq -r '.data[0].id')
-        
+
         if [[ "$latest_file_id" != "$current_file_id" ]]; then
             new_filename=$(echo "$file_info" | jq -r '.data[0].fileName')
             download_url=$(echo "$file_info" | jq -r '.data[0].downloadUrl')
             display_name=$(echo "$file_info" | jq -r '.data[0].displayName')
             file_date=$(echo "$file_info" | jq -r '.data[0].fileDate')
-            
+
             if download_mod "$download_url" "$new_filename"; then
                 rm -f "$MODS_DIR/$filename"
-                
+
                 temp_file=$(mktemp)
+                jq --arg old "$filename" \
+                   --arg new "$new_filename" \
+                   --arg file_id "$latest_file_id" \
+                   --arg version "$display_name" \
+                   --arg date "$file_date" \
+                   'del(.[$old]) | . + {($new): (.[$old] // {} | .file_id = $file_id | .version = $version | .last_updated = $date)}' \
+                   "$METADATA_FILE" > "$temp_file"
+
                 jq --arg old "$filename" \
                    --arg new "$new_filename" \
                    --arg file_id "$latest_file_id" \
@@ -384,19 +392,35 @@ main_menu() {
         fi
         
         case $choice in
-            1) search_mods ;;
-            2) install_mod ;;
-            3) update_mods ;;
-            4) list_mods ;;
-            5) remove_mod ;;
-            6) test_api_connection; read -p "Press enter to continue..." ;;
-            7) break ;;
+            1)
+                search_mods
+                ;;
+            2)
+                install_mod
+                ;;
+            3)
+                update_mods
+                ;;
+            4)
+                list_mods
+                ;;
+            5)
+                remove_mod
+                ;;
+            6)
+                test_api_connection
+                read -p "Press enter to continue..."
+                ;;
+            7)
+                break
+                ;;
         esac
     done
 }
 
 check_whiptail
 check_jq
+
 main_menu
 
 echo -e "${GREEN}Thank you for using Hytale Mod Manager!${NC}"
