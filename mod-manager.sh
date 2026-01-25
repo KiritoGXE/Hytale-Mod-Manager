@@ -1,11 +1,11 @@
 #!/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HOMEDIR="/home/kirito/hytale"
+HOMEDIR="/root/hytale"
 MODS_DIR="$HOMEDIR/Server/mods"
 METADATA_FILE="$MODS_DIR/mod-metadata.json"
 CURSEFORGE_API="https://api.curseforge.com/v1"
-API_KEY='$2a$10$x9XKoY43rXaVe8p9pjMPYeXnMmoQQDXfSRkukv01xNv5Q53HIptj2'
+API_KEY=''
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
