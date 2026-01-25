@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hytale Mod Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="number"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .search-results, .installed-mods {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .mod-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s;
+        }
+
+        .mod-item:hover {
+            transform: translateX(5px);
+            background: #f0f0f0;
+        }
+
+        .mod-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .mod-info {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .mod-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mod-actions button {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .status-bar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background: #f44336;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Hytale Mod Manager</h1>
+            <p class="subtitle">Gestisci i tuoi mod di Hytale facilmente</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="apiStatus"></div>
+                <span id="apiStatusText">Checking API...</span>
+            </div>
+            <div class="status-item">
+                <span>Mod installati: <strong id="modCount">0</strong></span>
+            </div>
+            <button onclick="updateAllMods()" id="updateAllBtn">🔄 Aggiorna Tutti</button>
+        </div>
+
+        <div class="main-grid" style="margin-top: 20px;">
+            <div class="card">
+                <h2>🔍 Cerca Mod</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Cerca mod per nome...">
+                    <button onclick="searchMods()">Cerca</button>
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <div class="card">
+                <h2>➕ Installa per ID</h2>
+                <div class="search-box">
+                    <input type="number" id="projectIdInput" placeholder="CurseForge Project ID">
+                    <button onclick="installById()">Installa</button>
+                </div>
+                <p style="color: #666; font-size: 0.9em; margin-top: 10px;">
+                    Inserisci l'ID del progetto CurseForge per installare direttamente un mod.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📦 Mod Installati</h2>
+            <div id="installedMods" class="installed-mods"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(`${API_URL}/test-connection`);
+                const data = await response.json();
+                
+                const statusDot = document.getElementById('apiStatus');
+                const statusText = document.getElementById('apiStatusText');
+                
+                if (data.success) {
+                    statusDot.classList.remove('offline');
+                    statusText.textContent = 'API Connessa';
+                } else {
+                    statusDot.classList.add('offline');
+                    statusText.textContent = 'API Non Configurata';
+                }
+            } catch (error) {
+                document.getElementById('apiStatus').classList.add('offline');
+                document.getElementById('apiStatusText').textContent = 'Server Offline';
+            }
+        }
+
+        async function loadInstalledMods() {
+            const container = document.getElementById('installedMods');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Caricamento...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/mods`);
+                const mods = await response.json();
+                
+                document.getElementById('modCount').textContent = mods.length;
+                
+                if (mods.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                            </svg>
+                            <p>Nessun mod installato</p>
+                            <p style="font-size: 0.9em; margin-top: 10px;">Cerca e installa il tuo primo mod!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = mods.map(mod => `
+                    <div class="mod-item">
+                        <div class="mod-name">${mod.name}</div>
+                        <div class="mod-info">
+                            📄 ${mod.filename}<br>
+                            🔖 Versione: ${mod.version || 'N/A'}<br>
+                            📅 ${new Date(mod.last_updated).toLocaleDateString('it-IT')}
+                        </div>
+                        <div class="mod-actions">
+                            <button class="btn-danger" onclick="removeMod('${mod.filename}', '${mod.name}')">
+                                🗑️ Rimuovi
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state" style="color: #f44336;">❌ Errore nel caricamento</div>`;
+                showNotification('Errore nel caricamento dei mod', 'error');
+            }
+        }
+
+        async function searchMods() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                showNotification('Inserisci un termine di ricerca', 'error');
+                return;
+            }
+            
+            const container = document.getElementById('searchResults');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Ricerca in corso...</div>';
+            
+            try {
+                const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                if (!data.data || data.data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <p>Nessun risultato per "${query}"</p>
+                            <p style="font-size: 0.9em; margin-top: 10px;">Prova con un altro termine</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = data.data.slice(0, 10).map(mod => `
+                    <div class="mod-item">
+                        <div class="mod-name">
+                            ${mod.name}
+                            <span class="badge">${mod.downloadCount?.toLocaleString() || 0} DL</span>
+                        </div>
+                        <div class="mod-info">
+                            ${mod.summary || 'Nessuna descrizione'}
+                        </div>
+                        <div class="mod-actions">
+                            <button class="btn-success" onclick="installMod(${mod.id}, '${mod.name.replace(/'/g, "\\'")}')">
+                                ⬇️ Installa
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = `<div class="empty-state" style="color: #f44336;">❌ Errore nella ricerca</div>`;
+                showNotification('Errore nella ricerca', 'error');
+            }
+        }
+
+        async function installMod(projectId, modName) {
+            if (!confirm(`Installare "${modName}"?`)) return;
+            
+            showNotification('Download in corso...', 'success');
+            
+            try {
+                const response = await fetch(`${API_URL}/mods/${projectId}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(`${modName} installato con successo!`, 'success');
+                    loadInstalledMods();
+                    document.getElementById('searchResults').innerHTML = '';
+                    document.getElementById('searchInput').value = '';
+                } else {
+                    showNotification(data.error || 'Errore durante l\'installazione', 'error');
+                }
+            } catch (error) {
+                showNotification('Errore durante l\'installazione', 'error');
+            }
+        }
+
+        async function installById() {
+            const projectId = document.getElementById('projectIdInput').value.trim();
+            if (!projectId) {
+                showNotification('Inserisci un Project ID valido', 'error');
+                return;
+            }
+            
+            await installMod(projectId, 'Mod');
+            document.getElementById('projectIdInput').value = '';
+        }
+
+        async function removeMod(filename, modName) {
+            if (!confirm(`Rimuovere "${modName}"?`)) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/mods/${encodeURIComponent(filename)}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showNotification(`${modName} rimosso con successo`, 'success');
+                    loadInstalledMods();
+                } else {
+                    showNotification(data.error || 'Errore durante la rimozione', 'error');
+                }
+            } catch (error) {
+                showNotification('Errore durante la rimozione', 'error');
+            }
+        }
+
+        async function updateAllMods() {
+            const btn = document.getElementById('updateAllBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Aggiornamento...';
+            
+            try {
+                const response = await fetch(`${API_URL}/mods/update-all`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.updated_count > 0) {
+                        showNotification(`${data.updated_count} mod aggiornati!`, 'success');
+                    } else {
+                        showNotification('Tutti i mod sono già aggiornati', 'success');
+                    }
+                    loadInstalledMods();
+                } else {
+                    showNotification(data.error || 'Errore durante l\'aggiornamento', 'error');
+                }
+            } catch (error) {
+                showNotification('Errore durante l\'aggiornamento', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Aggiorna Tutti';
+            }
+        }
+
+        // Event listener per ricerca con Enter
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchMods();
+            });
+            
+            document.getElementById('projectIdInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') installById();
+            });
+            
+            checkApiStatus();
+            loadInstalledMods();
+            
+            // Auto-refresh ogni 30 secondi
+            setInterval(() => {
+                checkApiStatus();
+                loadInstalledMods();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>
