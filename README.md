@@ -129,7 +129,7 @@ Run the manager with:
 * Browse search results with descriptions
 * Select and confirm installation
 
-### 🆔 Install by Project ID - ⛔ Broken
+### 🆔 Install by Project ID
 
 * Enter the CurseForge Project ID directly
 * Fastest method if you know the mod
