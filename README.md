@@ -235,7 +235,7 @@ Contributions are welcome:
 
 ## 📜 License
 
-This project is open source. Use it, modify it, and share it freely 🎉
+This project is open source. You are free to use, modify, and share it, as long as you always credit the original project. 🎉
 
 ---
 
