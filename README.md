@@ -173,10 +173,6 @@ You forgot to add your API key to the script. Edit `mod-manager.sh` and add it t
 
 ### Common Issues
 
-**"No mods found" when searching**
-
-The search uses gameId 432 (Minecraft) as a placeholder. When Hytale releases, you may need to update the gameId in the `search_mods()` function.
-
 **Mods not updating**
 
 - Check that the `mod-metadata.json` file exists and is valid JSON
