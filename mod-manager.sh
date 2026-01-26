@@ -136,7 +136,11 @@ import json
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, 
+     resources={r"/api/*": {"origins": "*"}},
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "DELETE", "OPTIONS"])
 
 HOMEDIR = os.environ.get("HOMEDIR")
 API_KEY = os.environ.get("CURSEFORGE_API_KEY")
