@@ -169,11 +169,6 @@ def save_metadata(data):
     with open(METADATA_FILE, 'w') as f:
         json.dump(data, f, indent=2)
 
-def cdn_fallback_url(file_id, filename):
-    """Costruisce l'URL CDN di Forge quando downloadUrl e' null."""
-    fid = int(file_id)
-    return f"https://edge.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{filename}"
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -280,11 +275,9 @@ def install_mod(project_id):
         file_data = files_info.json()['data'][0]
         filename = file_data['fileName']
         download_url = file_data.get('downloadUrl')
-
-        # Fallback CDN: alcuni mod author disabilitano la distribuzione diretta via API
         if not download_url:
-            download_url = cdn_fallback_url(file_data['id'], filename)
-        
+            fid = int(file_data['id'])
+            download_url = f"https://edge.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{filename}"
         file_response = requests.get(download_url, stream=True, timeout=30)
         file_path = os.path.join(MODS_DIR, filename)
         
@@ -364,11 +357,9 @@ def update_all_mods():
             if latest_file_id != current_file_id:
                 new_filename = file_data['fileName']
                 download_url = file_data.get('downloadUrl')
-
-                # Fallback CDN: alcuni mod author disabilitano la distribuzione diretta via API
                 if not download_url:
-                    download_url = cdn_fallback_url(file_data['id'], new_filename)
-                
+                    upd_id = int(file_data['id'])
+                    download_url = f"https://edge.forgecdn.net/files/{upd_id // 1000}/{upd_id % 1000}/{new_filename}"
                 file_response = requests.get(download_url, stream=True, timeout=30)
                 new_file_path = os.path.join(MODS_DIR, new_filename)
                 
